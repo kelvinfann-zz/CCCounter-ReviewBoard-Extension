@@ -1,0 +1,3 @@
+[reviewboard.extensions]
+cc_counter = cc_counter.extension:CCCounter
+
