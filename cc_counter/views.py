@@ -13,7 +13,7 @@ import os
 
 HOMEFOLDER = os.getenv('HOME')
 
-def download_ccdata(request, review_request_id, revision,
+def _download_ccdata(request, review_request_id, revision,
                         filediff_id, local_site=None, modified=True):
     """Generates the Cyclometric complexity of a specified file.
 
@@ -39,7 +39,7 @@ def download_ccdata(request, review_request_id, revision,
 
     data = convert_to_unicode(data, encoding_list)[1]
 
-    temp_file_name = filediff.source_file + ".cctemp"
+    temp_file_name = "cctempfile_" + filediff.source_file
     source_file = os.path.join(HOMEFOLDER, temp_file_name)
 
     temp_file = open(source_file, 'w')
@@ -50,6 +50,19 @@ def download_ccdata(request, review_request_id, revision,
       
     if not ccdata:
     	ccdata = "Incompatable file type"
+
+    return ccdata, filediff.source_file
+
+def download_ccdata(request, review_request_id, revision,
+                        filediff_id):
+    """Generates the Cyclometric complexity of a specified file.
+
+    This will download the file as a string, write it to a temporary file 
+    in the homefolder, run the analysis, delete the temporary file, and 
+    output the cyclometric complexity of the data followed by the file name.
+    """
+
+    ccdata, source_file = _download_ccdata(request, review_request_id, revision, filediff_id) 
 
     template = loader.get_template('cc_counter/download_ccdata.html')
     context = RequestContext(request, {
