@@ -70,7 +70,7 @@ def download_ccdata(request, review_request_id, revision,
     })
     return HttpResponse(template.render(context))
 
-def _reviewrequest_cc(request, review_request_id, local_site=None, modified=True):
+def _reviewrequest_recent_cc(request, review_request_id, local_site=None, modified=True):
 
     review_request, response = \
         _find_review_request(request, review_request_id, local_site)
@@ -80,22 +80,18 @@ def _reviewrequest_cc(request, review_request_id, local_site=None, modified=True
 
     draft = review_request.get_draft(request.user)
     diffset = _query_for_diff(review_request, request.user, None, draft)
-    encoding_list = diffset.repository.get_encoding_list()
+    
+    revision = diffset.revision
+    filediff_ids = [ffile.pk for ffile in diffset.files.all()] 
 
-    if True:
-        return [ffile.__str__() + '###' for ffile in diffset.files.all()]
+    ccdata = []
+    for filediff_id in filediff_ids:
+        ccdata += [_download_ccdata(request, review_request_id, revision, filediff_id)]
 
-    data = get_original_file(filediff, request, encoding_list)
-
-    if modified:
-        data = get_patched_file(data, filediff, request)
-
-    data = convert_to_unicode(data, encoding_list)[1]
-
-    return data
+    return ccdata
 
 
-def reviewrequest_cc(request, review_request_id):
+def reviewrequest_recent_cc(request, review_request_id):
     """The generic view of the Cyclometric complexity counter
     """
 
@@ -106,5 +102,11 @@ def reviewrequest_cc(request, review_request_id):
     #data = _reviewrequest_cc(request, review_request_id)
 
     #return HttpResponse("unimplemented", content_type='text/plain; charset=utf-8')
-    data = _reviewrequest_cc(request, review_request_id)
-    return HttpResponse(data)
+    
+    ccdata = _reviewrequest_recent_cc(request, review_request_id)
+    template = loader.get_template('cc_counter/reviewrequest_recent_cc.html')
+    context = RequestContext(request, {
+        'ccdata': ccdata
+    })
+
+    return HttpResponse(template.render(context))

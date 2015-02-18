@@ -9,5 +9,5 @@ urlpatterns = patterns('',
 	url(r'^r/(?P<review_request_id>[0-9]+)/diff/cc/(?P<revision>[0-9]+)/(?P<filediff_id>[0-9]+)/$',
 		views.download_ccdata, name='index'),
 	url(r'^r/(?P<review_request_id>[0-9]+)/diff/cc/$',
-		views.reviewrequest_cc, name='index'),
+		views.reviewrequest_recent_cc, name='index'),
 ) 
