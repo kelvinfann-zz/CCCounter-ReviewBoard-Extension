@@ -16,8 +16,22 @@
             },
         });
     }; 
+    function getAnalysis() {
+        var inputURL = "cc/"
+        $.ajax({
+            url: inputURL,
+            success: function(result){
+                console.log('cc success');
+                $("#cccontent_general").html(result);
+            },
+            error: function( xhr, status, errorThrown ) {
+                $("#cccontent_general").html("not valid value");
+            },
+        });
+    }; 
+    $( document ).ready(getAnalysis());
 </script>
-
+<div id="cccontent_general"></div>
 <div>
     <form name='cccontentform' action='' method='get'>revisions/filediff_id<br>
         <input type='number' name='revision'>
