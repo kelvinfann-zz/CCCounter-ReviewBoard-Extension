@@ -2,7 +2,7 @@ from setuptools import setup
 
 
 PACKAGE = "cc_counter"
-VERSION = "0.63"
+VERSION = "0.65"
 
 setup(
     name=PACKAGE,
