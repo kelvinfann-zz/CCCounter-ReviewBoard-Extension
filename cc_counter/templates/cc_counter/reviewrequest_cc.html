@@ -16,23 +16,8 @@
             },
         });
     }; 
-    function genericShowing() {
-       var inputURL = "cc/";
-        $.ajax({
-            url: inputURL,
-            success: function(result){
-                console.log('cc success');
-                $("#ccbase").html(result);
-            },
-            error: function( xhr, status, errorThrown ) {
-                $("#ccbase").html("not valid value");
-            },
-        }); 
-    }
 </script>
-<script>$(document).ready(genericShowing());</script>
 
-<div id="ccbase"></div>
 <div>
     <form name='cccontentform' action='' method='get'>revisions/filediff_id<br>
         <input type='number' name='revision'>
