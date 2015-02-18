@@ -16,5 +16,5 @@ class CCCounter(Extension):
 	def __init__(self, *args, **kwargs):
 		super(CCCounter, self).__init__(*args, **kwargs)
 		URLHook(self, urlpatterns)
-		TemplateHook(self, "base-after-content", "cc_counter/reviewinsert_cc.html",
+		TemplateHook(self, "base-after-content", "cc_counter/reviewrequest_cc.html",
 				apply_to=diffviewer_url_names)

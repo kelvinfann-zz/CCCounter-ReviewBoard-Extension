@@ -19,7 +19,8 @@ def _download_ccdata(request, review_request_id, revision,
 
     This will download the file as a string, write it to a temporary file 
     in the homefolder, run the analysis, delete the temporary file, and 
-    output the cyclometric complexity of the data followed by the file name.
+    outputs a tuple of cyclometric complexity of the data (dictionary), and
+    the file name (string).
     """
 
     review_request, response = \
@@ -49,17 +50,15 @@ def _download_ccdata(request, review_request_id, revision,
     os.remove(source_file)
       
     if not ccdata:
-    	ccdata = "Incompatable file type"
+        ccdata = "Incompatable file type"
 
     return ccdata, filediff.source_file
 
 def download_ccdata(request, review_request_id, revision,
                         filediff_id):
-    """Generates the Cyclometric complexity of a specified file.
+    """Generates the Cyclometric complexity of a specified file as view.
 
-    This will download the file as a string, write it to a temporary file 
-    in the homefolder, run the analysis, delete the temporary file, and 
-    output the cyclometric complexity of the data followed by the file name.
+    Calls on _download_ccdata and simply packages the outputs into a view
     """
 
     ccdata, source_file = _download_ccdata(request, review_request_id, revision, filediff_id) 
@@ -71,10 +70,41 @@ def download_ccdata(request, review_request_id, revision,
     })
     return HttpResponse(template.render(context))
 
+def _reviewrequest_cc(request, review_request_id, local_site=None, modified=True):
+
+    review_request, response = \
+        _find_review_request(request, review_request_id, local_site)
+
+    if not review_request:
+        return response
+
+    draft = review_request.get_draft(request.user)
+    diffset = _query_for_diff(review_request, request.user, None, draft)
+    encoding_list = diffset.repository.get_encoding_list()
+
+    if True:
+        return [ffile.__str__() + '###' for ffile in diffset.files.all()]
+
+    data = get_original_file(filediff, request, encoding_list)
+
+    if modified:
+        data = get_patched_file(data, filediff, request)
+
+    data = convert_to_unicode(data, encoding_list)[1]
+
+    return data
+
+
 def reviewrequest_cc(request, review_request_id):
     """The generic view of the Cyclometric complexity counter
     """
 
     """"To be finished"""
     
-    return HttpResponse("unimplemented", content_type='text/plain; charset=utf-8')
+    #template = loader.get_template('cc_counter/reviewrequest_cc.html')
+
+    #data = _reviewrequest_cc(request, review_request_id)
+
+    #return HttpResponse("unimplemented", content_type='text/plain; charset=utf-8')
+    data = _reviewrequest_cc(request, review_request_id)
+    return HttpResponse(data)
