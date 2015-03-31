@@ -52,7 +52,7 @@ def _download_ccdata(request, review_request_id, revision,
     if not ccdata:
         ccdata = "Incompatable file type"
 
-    return ccdata, filediff.source_file
+    return filediff.source_file, ccdata 
 
 def download_ccdata(request, review_request_id, revision,
                         filediff_id):
@@ -61,7 +61,7 @@ def download_ccdata(request, review_request_id, revision,
     Calls on _download_ccdata and simply packages the outputs into a view
     """
 
-    ccdata, source_file = _download_ccdata(request, review_request_id, revision, filediff_id) 
+    source_file, ccdata = _download_ccdata(request, review_request_id, revision, filediff_id) 
 
     template = loader.get_template('cc_counter/download_ccdata.html')
     context = RequestContext(request, {
@@ -70,7 +70,8 @@ def download_ccdata(request, review_request_id, revision,
     })
     return HttpResponse(template.render(context))
 
-def _reviewrequest_recent_cc(request, review_request_id, local_site=None, modified=True):
+def _reviewrequest_recent_cc(request, review_request_id, revision_offset=0,
+                                local_site=None, modified=True):
 
     review_request, response = \
         _find_review_request(request, review_request_id, local_site)
@@ -82,31 +83,36 @@ def _reviewrequest_recent_cc(request, review_request_id, local_site=None, modifi
     diffset = _query_for_diff(review_request, request.user, None, draft)
     
     revision = diffset.revision
+
+    if revision - revision_offset <= 0:
+        return [revision - revision_offset]
+    else:
+        revision -=  revision_offset
+        diffset = _query_for_diff(review_request, request.user, revision, draft)
+        
     filediff_ids = [ffile.pk for ffile in diffset.files.all()] 
 
-    ccdata = []
+    reviewrequest_ccdata = []
     for filediff_id in filediff_ids:
-        ccdata += [_download_ccdata(request, review_request_id, revision, filediff_id)]
+        reviewrequest_ccdata += [_download_ccdata(request, review_request_id, revision, filediff_id)]
 
-    return ccdata
+    reviewrequest_ccdata += [revision]
+    return reviewrequest_ccdata
 
 
-def reviewrequest_recent_cc(request, review_request_id):
+def reviewrequest_recent_cc(request, review_request_id, revision_offset=1):
     """The generic view of the Cyclometric complexity counter
     """
 
     """"To be finished"""
     
-    #template = loader.get_template('cc_counter/reviewrequest_cc.html')
+    reviewrequest_ccdata = _reviewrequest_recent_cc(request, review_request_id)
+    prev_reviewrequest_ccdata = _reviewrequest_recent_cc(request, review_request_id, revision_offset=1)
 
-    #data = _reviewrequest_cc(request, review_request_id)
-
-    #return HttpResponse("unimplemented", content_type='text/plain; charset=utf-8')
-    
-    ccdata = _reviewrequest_recent_cc(request, review_request_id)
     template = loader.get_template('cc_counter/reviewrequest_recent_cc.html')
     context = RequestContext(request, {
-        'ccdata': ccdata
+        'reviewrequest_ccdata': reviewrequest_ccdata,
+        'prev_reviewrequest_ccdata': prev_reviewrequest_ccdata
     })
 
     return HttpResponse(template.render(context))

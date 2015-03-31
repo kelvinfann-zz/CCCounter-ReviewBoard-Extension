@@ -1,5 +1,12 @@
 <div>
-	{% for file_cc in ccdata %}
-		<p>{{ file_cc }}</p>
+	<p>---</p>
+	<p>normal</p>
+	{% for fileData in reviewrequest_ccdata %}
+    	<p>{{ fileData }}</p>
 	{% endfor %}
+	<p>---</p>
+    {% for fileData in prev_reviewrequest_ccdata %}
+        <p>{{ fileData }}</p>
+    {% endfor %}
+    <p>---</p>
 </div>
