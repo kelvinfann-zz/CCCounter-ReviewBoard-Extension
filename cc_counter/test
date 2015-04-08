@@ -1,8 +1,0 @@
-#!/bin/bash
-cd ..
-{
-	./make
-} &> /dev/null
-cd cc_counter
-sudo python testcases.py
-sudo rm *.pyc
