@@ -1,12 +1,15 @@
 <div>
-	<p>---</p>
-	<p>normal</p>
-	{% for fileData in reviewrequest_ccdata %}
-    	<p>{{ fileData }}</p>
-	{% endfor %}
-	<p>---</p>
-    {% for fileData in prev_reviewrequest_ccdata %}
+    {% for fileData in compatable_files %}
+        <div style="color:#0000FF">{{ fileData.filename }}</div>
+        <div style="color:#FF6600">new: {{ fileData.ccchanges.new }}</div>
+        <div style="color:#880000">changed: {{ fileData.ccchanges.changed }}</div>
+        <div style="color:#A9A9A9">constant: {{ fileData.ccchanges.constant }}</div>
+    {% endfor %}
+</div>
+<div>---</div>
+<div>Incompatable Files</div>
+<div style="color:#A9A9A9">
+    {% for fileData in incompatable_files %}
         <p>{{ fileData }}</p>
     {% endfor %}
-    <p>---</p>
 </div>

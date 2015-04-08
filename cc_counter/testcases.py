@@ -1,13 +1,14 @@
 import os
 
-from diffreader import get_functions, get_function_titles, parameter_parser, _parameter_parser
-from ccreader import analyze_file
+from ccreader import analyze_file, get_comparison_data
+from utils import track_func_ccchanges
 
 TESTFILE_DIR = "testfiles"
-TEST_FILE1 = "Solver.java"
-TEST_FILE2 = "Util.java"
+TEST_FILE1 = "Util.java"
+TEST_FILE2 = "Solver.java"
+TEST_FILE3 = "Solver2.java"
 
-TEST_FILES = [TEST_FILE1, TEST_FILE2]
+TEST_FILES = [TEST_FILE1, TEST_FILE2, TEST_FILE3]
 TEST_FILES = [os.path.join(TESTFILE_DIR, test_file) for test_file in TEST_FILES]
 
 def main():
@@ -18,9 +19,6 @@ def test_all():
 	check_dirr()
 	test_analyze_file()
 	test_get_full_function_names()
-
-
-
 
 def pass_tests(function_name):
 	pass_tests = "\n\tPasses All Tests for: "
@@ -50,47 +48,31 @@ def check_dirr():
 
 def test_analyze_file():
 	function_name = "analyze_file"
-
-
-
 	files = list(analyze_file(test_file) for test_file in TEST_FILES)
 	for file_analysis in files:
-		print file_analysis
+		print file_analysis.keys()
 		check(type(file_analysis) is dict,
 			fail_msg=function_name + " returning wrong type, should be dict")
 		for function in file_analysis:
 			check(type(function) is str,
 				fail_msg=function_name + " returning wrong type, should be str")
 			check(type(file_analysis[function]) is dict,
-				fail_msg=function_name + " returning wrong type, should be list")
-	
+				fail_msg=function_name + " returning wrong type, should be dict")
+			for linenum in file_analysis[function]:
+				print file_analysis[function][linenum]
 	for test_file in TEST_FILES:
 		print test_file + " returned correct analysis"
-
 	return pass_tests(function_name)
 
 
 def test_get_full_function_names():
 	function_name = "get_full_function_names"
-
-	for test_file in TEST_FILES:
-		# file_analysis = analyze_file(test_file)
-		# full_function_names = get_function_titles(test_file, file_analysis)
-		# print full_function_names
-		# for function in full_function_names:
-		# 	parameter_parser(full_function_names[function])
-		print get_functions(test_file)
-
-
-
-
-	test_func1 = {
-				'CCN': 3,
-				'name': "analyze_file",
-				'line': 5,
-			}
-
-
+	t = [get_comparison_data(test_file) for test_file in TEST_FILES]
+	print t
+	print 
+	print track_func_ccchanges( TEST_FILES[1], TEST_FILES[2])
+	print
+	print track_func_ccchanges( TEST_FILES[0], TEST_FILES[1])
 	return pass_tests(function_name)
 
 if __name__ == "__main__":
