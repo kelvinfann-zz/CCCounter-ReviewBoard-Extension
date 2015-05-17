@@ -8,6 +8,8 @@ from reviewboard.urls import review_request_url_names, diffviewer_url_names
 from cc_counter.urls import urlpatterns
 
 class CCCounter(Extension):
+	"""Links up CC Counter extension into CCCounter's framework
+	"""
 	metadata = {
 		'Name': 'CCCounter'
 	}

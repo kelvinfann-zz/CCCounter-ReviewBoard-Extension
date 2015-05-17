@@ -8,11 +8,45 @@ from reviewboard.reviews.views import _find_review_request, _query_for_diff, get
 from reviewboard.diffviewer.diffutils import convert_to_unicode, get_original_file
 
 from cc_counter.ccreader import analyze_file, get_comparison_data
-from cc_counter.utils import track_diff_ccchanges
+from cc_counter.cccomparer import track_diff_ccchanges
 
 import os
 
 HOMEFOLDER = os.getenv('HOME')
+
+def _download_analysis(request, analyze_function, review_request_id, revision,
+                        filediff_id, local_site=None, modified=True):
+    review_request, response = \
+        _find_review_request(request, review_request_id, local_site)
+
+    if not review_request:
+        return response
+
+    draft = review_request.get_draft(request.user)
+    diffset = _query_for_diff(review_request, request.user, revision, draft)
+    filediff = get_object_or_404(diffset.files, pk=filediff_id)
+    encoding_list = diffset.repository.get_encoding_list()
+    data = get_original_file(filediff, request, encoding_list)
+
+    if modified:
+        data = get_patched_file(data, filediff, request)
+
+    data = convert_to_unicode(data, encoding_list)[1]
+
+    temp_file_name = "cctempfile_" + filediff.source_file
+    source_file = os.path.join(HOMEFOLDER, temp_file_name)
+
+    temp_file = open(source_file, 'w')
+    temp_file.write(data)
+    temp_file.close()
+    data_analysis = analyze_function(source_file)
+    os.remove(source_file)
+      
+    if not comparison_data:
+        comparison_data = None
+
+    return filediff.source_file, comparison_data 
+
 
 def _download_comparison_data(request, review_request_id, revision,
                         filediff_id, local_site=None, modified=True):
