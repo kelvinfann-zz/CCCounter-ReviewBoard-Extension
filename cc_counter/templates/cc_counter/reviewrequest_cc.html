@@ -1,43 +1,52 @@
-<script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 <script>
-    function getAnalysis(form) {
-        var revision = form.revision.value;
-        var filediff_id = form.filediff_id.value;
-        var inputURL = "cc/" + revision + '/' + filediff_id;
-        $.ajax({
-            url: inputURL,
-            success: function(result){
-                console.log('cc success');
-                $("#cccontent").html(result);
-            },
-            error: function( xhr, status, errorThrown ) {
-                $("#cccontent").html("not valid value");
-            },
+    // function getAnalysis(form) {
+    //     var revision = form.revision.value;
+    //     var filediff_id = form.filediff_id.value;
+    //     var inputURL = "cc/" + revision + '/' + filediff_id;
+    //     $.ajax({
+    //         url: inputURL,
+    //         success: function(result){
+    //             console.log('cc success');
+    //             $("#cccontent").html(result);
+    //         },
+    //         error: function( xhr, status, errorThrown ) {
+    //             $("#cccontent").html("not valid value");
+    //         },
+    //     });
+    // };
+    function setAccordion() {
+        console.log('accordion');
+        $( "#cfcc" ).accordion({
+            heightStyle: "fill",
+            active: 2,
+            collapsible: true
         });
-    }; 
-    function getAnalysis() {
+    };  
+    function getAnalysisNF() {
         var inputURL = "cc/"
         $.ajax({
             url: inputURL,
             success: function(result){
                 console.log('cc success');
                 $("#cccontent_general").html(result);
+                setAccordion();
             },
             error: function( xhr, status, errorThrown ) {
-                $("#cccontent_general").html("not valid value");
+                $("#cccontent_general").html("Fetching /cc/ unsuccessful");
             },
         });
-    }; 
-    $( document ).ready(getAnalysis());
+    };
+    
+    $( window ).load(getAnalysisNF());
+    
 </script>
 <div id="cccontent_general"></div>
 <div>
-    <form name='cccontentform' action='' method='get'>revisions/filediff_id<br>
+    <!-- <form name='cccontentform' action='' method='get'>revisions/filediff_id<br>
         <input type='number' name='revision'>
         <input type='number' name='filediff_id'>
         <input type='button' name='button' value='Submit' onClick='getAnalysis(this.form)'>
-    </form>
+    </form> -->
 </div>
 <div id="cccontent">
 </div>

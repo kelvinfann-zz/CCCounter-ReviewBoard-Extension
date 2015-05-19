@@ -2,6 +2,8 @@ from cc_counter.ccreader import get_comparison_data
 import copy
 
 def track_diff_ccchanges(new_diff_comparison_data, orig_diff_comparison_data):
+	"""
+	"""
 	orig_file_names = set(orig_file for orig_file in orig_diff_comparison_data)
 	diff_ccchanges = []
 	for new_filename in new_diff_comparison_data:

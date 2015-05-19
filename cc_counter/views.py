@@ -14,8 +14,15 @@ import os
 
 HOMEFOLDER = os.getenv('HOME')
 
-def _download_analysis(request, analyze_function, review_request_id, revision,
+def _download_analysis(analyze_function, request, review_request_id, revision,
                         filediff_id, local_site=None, modified=True):
+    """Generates file analysis given by analyze_function on the specified file.
+
+    This will download the file as a string, write it to a temporary file 
+    in the homefolder, run the analysis, delete the temporary file, and 
+    output the filename and data_analysis
+    """
+    
     review_request, response = \
         _find_review_request(request, review_request_id, local_site)
 
@@ -42,112 +49,57 @@ def _download_analysis(request, analyze_function, review_request_id, revision,
     data_analysis = analyze_function(source_file)
     os.remove(source_file)
       
-    if not comparison_data:
-        comparison_data = None
+    if not data_analysis:
+        data_analysis = None
 
-    return filediff.source_file, comparison_data 
+    return filediff.source_file, data_analysis 
 
 
 def _download_comparison_data(request, review_request_id, revision,
                         filediff_id, local_site=None, modified=True):
     """Generates the Cyclometric complexity of a specified file.
-
-    This will download the file as a string, write it to a temporary file 
-    in the homefolder, run the analysis, delete the temporary file, and 
-    outputs a tuple of cyclometric complexity of the data (dictionary), and
-    the file name (string).
     """
 
-    review_request, response = \
-        _find_review_request(request, review_request_id, local_site)
-
-    if not review_request:
-        return response
-
-    draft = review_request.get_draft(request.user)
-    diffset = _query_for_diff(review_request, request.user, revision, draft)
-    filediff = get_object_or_404(diffset.files, pk=filediff_id)
-    encoding_list = diffset.repository.get_encoding_list()
-    data = get_original_file(filediff, request, encoding_list)
-
-    if modified:
-        data = get_patched_file(data, filediff, request)
-
-    data = convert_to_unicode(data, encoding_list)[1]
-
-    temp_file_name = "cctempfile_" + filediff.source_file
-    source_file = os.path.join(HOMEFOLDER, temp_file_name)
-
-    temp_file = open(source_file, 'w')
-    temp_file.write(data)
-    temp_file.close()
-    comparison_data = get_comparison_data(source_file)
-    os.remove(source_file)
-      
-    if not comparison_data:
-        comparison_data = None
-
-    return filediff.source_file, comparison_data 
+    return _download_analysis(get_comparison_data, request, review_request_id, 
+        revision, filediff_id, local_site, modified) 
 
 def _download_ccdata(request, review_request_id, revision,
                         filediff_id, local_site=None, modified=True):
     """Generates the Cyclometric complexity of a specified file.
-
-    This will download the file as a string, write it to a temporary file 
-    in the homefolder, run the analysis, delete the temporary file, and 
-    outputs a tuple of cyclometric complexity of the data (dictionary), and
-    the file name (string).
     """
 
-    review_request, response = \
-        _find_review_request(request, review_request_id, local_site)
-
-    if not review_request:
-        return response
-
-    draft = review_request.get_draft(request.user)
-    diffset = _query_for_diff(review_request, request.user, revision, draft)
-    filediff = get_object_or_404(diffset.files, pk=filediff_id)
-    encoding_list = diffset.repository.get_encoding_list()
-    data = get_original_file(filediff, request, encoding_list)
-
-    if modified:
-        data = get_patched_file(data, filediff, request)
-
-    data = convert_to_unicode(data, encoding_list)[1]
-
-    temp_file_name = "cctempfile_" + filediff.source_file
-    source_file = os.path.join(HOMEFOLDER, temp_file_name)
-
-    temp_file = open(source_file, 'w')
-    temp_file.write(data)
-    temp_file.close()
-    ccdata = analyze_file(source_file)
-    os.remove(source_file)
-      
+    source_file, ccdata =_download_analysis(analyze_file, request, 
+        review_request_id, revision,filediff_id, local_site, modified) 
+    
     if not ccdata:
-        ccdata = "Incompatable file type"
-
-    return filediff.source_file, ccdata 
+        ccdata = "Incompatable file type" 
+    
+    return source_file, ccdata
 
 def download_ccdata(request, review_request_id, revision,
                         filediff_id):
     """Generates the Cyclometric complexity of a specified file as view.
 
-    Calls on _download_ccdata and simply packages the outputs into a view
+    Calls on _download_analysis and simply packages the outputs into a view
     """
 
-    source_file, ccdata = _download_ccdata(request, review_request_id, revision, filediff_id) 
+    source_file, ccdata = _download_analysis(analyze_file, request, 
+        review_request_id, revision, filediff_id)
+
+    if not ccdata:
+        ccdata = "Incompatable file type" 
 
     template = loader.get_template('cc_counter/download_ccdata.html')
     context = RequestContext(request, {
         'ccdata' : ccdata,
         'source_file' : source_file,
     })
+
     return HttpResponse(template.render(context))
 
 def _reviewrequest_recent_cc(request, review_request_id, revision_offset=0,
                                 local_site=None, modified=True):
+    
 
     review_request, response = \
         _find_review_request(request, review_request_id, local_site)

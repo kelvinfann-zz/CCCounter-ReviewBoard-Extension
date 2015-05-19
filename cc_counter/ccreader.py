@@ -26,10 +26,6 @@ def get_comparison_data(filename):
 	if file_analysis != None:
 		add_function_titles(filename, file_analysis)
 	return file_analysis
-
-############################################################################################
-############################################################################################
-############################################################################################
 	
 def add_function_titles(filename, file_analysis):
 	"""Adds to file_analysis the full function titles from the code file into the parameters
@@ -70,11 +66,6 @@ def _parameter_parser(function_title):
 		raise Exception("Has multiple '(' or ')' and split \
 			is not accounting for them")
 	return set(parameters[0].split(','))
-
-
-############################################################################################
-############################################################################################
-############################################################################################
 
 def analyze_file(filename):
 	"""Returns a list of function dictionary entries that include the CC of the functions 
