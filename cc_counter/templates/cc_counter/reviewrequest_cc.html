@@ -16,10 +16,11 @@
     // };
     function setAccordion() {
         console.log('accordion');
-        $( "#cfcc" ).accordion({
-            heightStyle: "fill",
+        $( ".accordion" ).accordion({
+            heightStyle: "auto",
             active: 2,
-            collapsible: true
+            collapsible: true,
+            icons: false,
         });
     };  
     function getAnalysisNF() {
@@ -41,14 +42,15 @@
     
 </script>
 <div id="cccontent_general"></div>
-<div>
-    <!-- <form name='cccontentform' action='' method='get'>revisions/filediff_id<br>
+
+<!-- <div>
+    <form name='cccontentform' action='' method='get'>revisions/filediff_id<br>
         <input type='number' name='revision'>
         <input type='number' name='filediff_id'>
         <input type='button' name='button' value='Submit' onClick='getAnalysis(this.form)'>
-    </form> -->
+    </form>
 </div>
 <div id="cccontent">
-</div>
+</div> -->
 
 

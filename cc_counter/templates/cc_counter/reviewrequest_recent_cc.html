@@ -9,18 +9,24 @@
 	overflow-y:scroll;
 	border: 1px solid black;
 	background-color: lightgrey;
+	list-style-type: none;
 }
 #compatable-files, #incompatable-files{
 	font-size: 100%;
+	text-decoration: underline;
+	font-weight: bold;
 /*	background-color: black;
 	color:white;*/
 }
-
+.cfcc-file{
+	background-color: lightgrey;
+}
+.cfcc-filename{
+	color:#0000FF;
+}
 .cfcc-content{
 	text-indent:25px;
-}
-.cfcc-file{
-	color:#0000FF;
+	height: 150px;
 }
 .cfcc-new{
 	color:#FF6600;
@@ -28,25 +34,27 @@
 .cfcc-changed{
 	color:#880000;
 }
-.cfcc-constant{
+/*.cfcc-constant{
 	color:#A9A9A9;
-}
+}*/
 </style>
-<div id="cfcc">
-	<h3 id="compatable-files"><u>Compatable Files</u></h3>
-	<div>
+<div id="cfcc" class="accordion">
+	<div id="compatable-files" class="accordion-section-title">Compatable Files</div>
+	<div class="accordion-section-content">
 		{% for fileData in compatable_files %}
-	        <div class="cfcc-file">{{ fileData.filename }}</div>
+	        <div class="cfcc-file accordion">
 	        <!-- cfcc: compatable files cyclometric complexity -->
-	        <div class="cfcc-content">
-	        	<div class="cfcc-new">new: {{ fileData.ccchanges.new }}</div>
-		        <div class="cfcc-changed">changed: {{ fileData.ccchanges.changed }}</div>
-		        <div class="cfcc-constant">constant: {{ fileData.ccchanges.constant }}</div>
+				<u1 class="cfcc-filename accordion-section-title">{{ fileData.filename }}</u1>	        
+		        <div class="cfcc-content accordion-section-content">
+		        	<li class="cfcc-new">new: {{ fileData.ccchanges.new }}</li>
+			        <li class="cfcc-changed">changed: {{ fileData.ccchanges.changed }}</li>
+			        <!-- <li class="cfcc-constant">constant: {{ fileData.ccchanges.constant }}</li> -->
+		    	</div>
 	    	</div>
 	    {% endfor %}
 	</div>
-	<h3 id="incompatable-files"><u>Incompatable Files</u></h3>
-	<div style="color:#A9A9A9">
+	<div id="incompatable-files" class="accordion-section-title">Incompatable Files</div>
+	<div style="color:#A9A9A9" class="accordion-section-content">
 	    {% for fileData in incompatable_files %}
 	        <div>{{ fileData.filename }}</div>
 	    {% endfor %}
