@@ -8,8 +8,9 @@
 	left:auto;
 	overflow-y:scroll;
 	border: 1px solid black;
-	background-color: lightgrey;
+	/*background-color: lightgrey;*/
 	list-style-type: none;
+	list-style-position:inside;
 }
 #compatable-files, #incompatable-files{
 	font-size: 100%;
@@ -18,14 +19,11 @@
 /*	background-color: black;
 	color:white;*/
 }
-.cfcc-file{
-	background-color: lightgrey;
-}
 .cfcc-filename{
 	color:#0000FF;
 }
 .cfcc-content{
-	text-indent:25px;
+	
 	height: 150px;
 }
 .cfcc-new{
@@ -33,6 +31,9 @@
 }
 .cfcc-changed{
 	color:#880000;
+}
+.cc-data{
+	text-indent: 5px;
 }
 /*.cfcc-constant{
 	color:#A9A9A9;
@@ -46,8 +47,14 @@
 	        <!-- cfcc: compatable files cyclometric complexity -->
 				<u1 class="cfcc-filename accordion-section-title">{{ fileData.filename }}</u1>	        
 		        <div class="cfcc-content accordion-section-content">
-		        	<li class="cfcc-new">new: {{ fileData.ccchanges.new }}</li>
-			        <li class="cfcc-changed">changed: {{ fileData.ccchanges.changed }}</li>
+		        	<li class="cfcc-new"><u>new:</u></li>
+		        	{% for function in fileData.ccchanges.new %}
+		        	<li class="cfcc-new cc-data">{{ function.function }} ({{ function.line }}): {{ function.cc }}</li>
+		        	{% endfor %}
+			        <li class="cfcc-changed"><u>changed:</u></li>
+		        	{% for function in fileData.ccchanges.changed %}
+		        	<li class="cfcc-changed cc-data">{{ function.function }} ({{ function.line }}): {{ function.cc }}</li>
+		        	{% endfor %}
 			        <!-- <li class="cfcc-constant">constant: {{ fileData.ccchanges.constant }}</li> -->
 		    	</div>
 	    	</div>

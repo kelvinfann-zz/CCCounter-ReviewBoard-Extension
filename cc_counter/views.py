@@ -63,18 +63,18 @@ def _download_comparison_data(request, review_request_id, revision,
     return _download_analysis(get_comparison_data, request, review_request_id, 
         revision, filediff_id, local_site, modified) 
 
-def _download_ccdata(request, review_request_id, revision,
-                        filediff_id, local_site=None, modified=True):
-    """Generates the Cyclometric complexity of a specified file.
-    """
+# def _download_ccdata(request, review_request_id, revision,
+#                         filediff_id, local_site=None, modified=True):
+#     """Generates the Cyclometric complexity of a specified file.
+#     """
 
-    source_file, ccdata =_download_analysis(analyze_file, request, 
-        review_request_id, revision,filediff_id, local_site, modified) 
+#     source_file, ccdata =_download_analysis(analyze_file, request, 
+#         review_request_id, revision,filediff_id, local_site, modified) 
     
-    if not ccdata:
-        ccdata = "Incompatable file type" 
+#     if not ccdata:
+#         ccdata = "Incompatable file type" 
     
-    return source_file, ccdata
+#     return source_file, ccdata
 
 def download_ccdata(request, review_request_id, revision,
                         filediff_id):
