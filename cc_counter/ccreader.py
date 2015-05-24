@@ -9,7 +9,7 @@ class ccfunc(object):
 		self.parameters = parameters
 
 	def __str__(self):
-		return dict_form().__str__()
+		return self.dict_form().__str__()
 
 	def dict_form(self):
 		return {"function": self.function,
@@ -17,6 +17,16 @@ class ccfunc(object):
 			"cc": self.cc,
 			"parameters": self.parameters,
 			}
+
+	def __eq__(self, other): 
+		r = False
+		if isinstance(other, ccfunc):
+			r = other.function == self.function
+			r = r and other.line == self.line
+			r = r and other.cc == self.cc
+			r = r and other.parameters == self.parameters
+		return r
+
 
 def get_comparison_data(filename):
 	"""Takes in a file and outputs it's cyclometric complexity analysis and the full 
@@ -60,8 +70,9 @@ def _parameter_parser(function_title):
 	"""The actual formating function, takes in a function title line (str) and 
 	outputs a set of the function's parameters
 	"""
-	parameters = function_title.split('(', 1)[1:]
-	parameters[-1] = parameters[-1].split(')', 1)[0]
+	parameters = function_title.replace(" ", "") #Strips whitespace
+	parameters = parameters.split('(', 1)[1:] #Identifies parameter beginning
+	parameters[-1] = parameters[-1].rsplit(')', 1)[0] #identifies parameter end
 	if len(parameters) != 1: 
 		raise Exception("Has multiple '(' or ')' and split \
 			is not accounting for them")
